@@ -112,7 +112,7 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
-
+LOGIN_URL = "accounts:login"
 USE_TZ = True
 from dotenv import load_dotenv
 import os

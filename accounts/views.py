@@ -42,15 +42,15 @@ def register(request):
     return render(request, "accounts/register.html")
 
 #login logic
-def login(request):
+def login_user(request):
     if request.method == "POST":
         username=request.POST.get("username")
         password=request.POST.get("password")
 
         user=user = authenticate(request, username=username, password=password)
         if user is not None:
-            authenticate(request, user)
-            return redirect("accounts:index")
+            authenticate(user)
+            return redirect("BlogUpload:create_blog")
            
         else:
             return render(request, "accounts/login.html",{"error":"Invalid username or password"})

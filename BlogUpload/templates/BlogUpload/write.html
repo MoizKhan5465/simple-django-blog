@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Blog</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+{% if messages %}
+    {% for message in messages %}
+
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+
+    {% endfor %}
+{% endif %}
+<body class="bg-light">
+    
+
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <div class="card shadow">
+
+                <div class="card-header bg-dark text-white">
+                    <h3 class="mb-0">Write a Blog</h3>
+                </div>
+
+                <div class="card-body">
+
+                    <!-- Blog Form -->
+                    <form method="POST" action="{% url 'BlogUpload:create_blog' %}">
+
+                        {% csrf_token %}
+
+                        <!-- Blog Title -->
+                        <div class="mb-3">
+                            <label class="form-label">Blog Title</label>
+                            <input type="text"
+                                   name="title"
+                                   class="form-control"
+                                   placeholder="Enter blog title"
+                                   required>
+                        </div>
+
+                        <!-- Blog Content -->
+                        <div class="mb-3">
+                            <label class="form-label">Blog Content</label>
+
+                            <textarea name="content"
+                                      class="form-control"
+                                      rows="8"
+                                      placeholder="Write your blog here..."
+                                      required></textarea>
+                        </div>
+
+                        <!-- Upload Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                Upload Blog
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
