@@ -1,6 +1,6 @@
 
 from django.http import HttpResponse
-from .models import BlogPost,Like
+from .models import BlogPost,Like,comments
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -32,8 +32,14 @@ def profile(request):
     user=request.user
     print(user)
     blogs=BlogPost.objects.filter(author=user)
+    
+    total_likes_received = Like.objects.filter(post__author=user).count()
+    total_comments_received = comments.objects.filter(post__author=user).count()
     context={"blogs":blogs,
-             "user":user}
+             "user":user,
+             "total_likes": total_likes_received,
+             "total_comments": total_comments_received
+             }
     return render(request,"BlogUpload/profile.html",context)
     
 @login_required
@@ -80,4 +86,18 @@ def likeBlog(request,blog_id):
         Like.objects.create(user=request.user, post=post)
 
     return redirect("BlogUpload:display_blogs")
+
+
+@login_required
+def commentBlog(request,blog_id):
+    post=get_object_or_404(BlogPost, id=blog_id)
+    if request.method=="POST":
+        content=request.POST.get("content", "").strip()
+        if content:
+            comments.objects.create(user=request.user, post=post, content=content)
+    return redirect("BlogUpload:display_blogs")
+    
+
+
+    
         
