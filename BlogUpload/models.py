@@ -14,3 +14,8 @@ class BlogPost(models.Model):
 
     def __str__(self):
         return self.title
+    
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(BlogPost, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)

@@ -11,12 +11,54 @@
     <style>
         body {
             font-family: "Inter", sans-serif;
-            background-color: #f8fafc;
+            background-color: #f1f5f9; 
             color: #1e293b;
         }
 
-        .navbar {
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        /* --- PREMIUM NAVBAR STYLING --- */
+        .navbar-custom {
+            background-color: #0f172a !important; 
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+        }
+        
+        .navbar-brand .text-primary {
+            color: #3b82f6 !important;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: #94a3b8 !important;
+            transition: color 0.3s ease;
+            position: relative;
+            padding: 0.5rem 1rem !important;
+            margin: 0 0.25rem;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #ffffff !important;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0px;
+            left: 50%;
+            background-color: #3b82f6;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 70%;
         }
 
         /* --- PROFILE HEADER --- */
@@ -24,7 +66,7 @@
             background: #ffffff;
             border-bottom: 1px solid #e2e8f0;
             padding: 4rem 0;
-            margin-bottom: 3rem;
+            margin-bottom: 4rem;
         }
 
         .profile-avatar {
@@ -43,7 +85,7 @@
         }
 
         .stats-badge {
-            background-color: #f1f5f9;
+            background-color: #f8fafc;
             color: #475569;
             padding: 6px 16px;
             border-radius: 50px;
@@ -52,17 +94,18 @@
             border: 1px solid #e2e8f0;
         }
 
-        /* --- BLOG CARDS --- */
+        /* --- BLOG CARDS & SEPARATION --- */
         .blog-card {
             border: 1px solid #e2e8f0;
             border-radius: 20px;
             background: #ffffff;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 2.5rem !important;
         }
 
         .blog-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05) !important;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08) !important;
         }
 
         .author-badge {
@@ -93,7 +136,7 @@
         }
 
         .read-more-link {
-            font-weight: 600;
+            font-weight: 700;
             color: #2563eb;
             text-decoration: none;
             cursor: pointer;
@@ -104,39 +147,86 @@
             color: #1d4ed8;
             text-decoration: underline;
         }
+
+        /* --- FLOATING ALERTS --- */
+        .alert-floating {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 1050;
+            min-width: 320px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border: none;
+            background-color: #10b981;
+            color: white;
+        }
+        
+        .alert-floating .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+
+        /* --- DANGER ZONE --- */
+        .danger-zone {
+            margin-top: 6rem;
+            padding: 3rem 2rem;
+            border: 2px dashed #fee2e2;
+            border-radius: 24px;
+            background-color: #ffffff;
+        }
     </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-      <div class="container">
-        <a class="navbar-brand fw-bold" href="{% url 'BlogUpload:display_blogs' %}">BlogApp</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto align-items-center">
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'BlogUpload:display_blogs' %}">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'BlogUpload:create_blog' %}">Write Blog</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="{% url 'BlogUpload:profile' %}">Profile</a>
-            </li>
-            <li class="nav-item">
-              <form method="POST" action="{% url 'accounts:logout' %}" class="m-0 ms-lg-3">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger btn-sm rounded-pill px-4">
-                  Logout
-                </button>
-              </form>
-            </li>
-          </ul>
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{% url 'BlogUpload:display_blogs' %}">
+                <span class="text-primary">Blog</span>App
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'display_blogs' %}active{% endif %}" 
+                           href="{% url 'BlogUpload:display_blogs' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'create_blog' %}active{% endif %}" 
+                           href="{% url 'BlogUpload:create_blog' %}">Write Blog</a>
+                    </li>
+                    <li class="nav-item me-lg-4">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" 
+                           href="{% url 'BlogUpload:profile' %}">Profile</a>
+                    </li>
+                    <li class="nav-item mt-3 mt-lg-0">
+                        <form method="POST" action="{% url 'accounts:logout' %}" class="m-0">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-light btn-sm rounded-pill px-4 fw-medium">
+                                Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
         </div>
-      </div>
     </nav>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-dismissible fade show alert-floating mt-3 d-flex align-items-center justify-content-between" role="alert">
+                <div class="d-flex align-items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle-fill me-3" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                    </svg>
+                    <span class="fw-medium">{{ message }}</span>
+                </div>
+                <button type="button" class="btn-close ms-3 position-relative" style="top: 0; right: 0;" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
 
     <div class="profile-header text-center shadow-sm">
       <div class="container">
@@ -155,8 +245,9 @@
           <h4 class="fw-bold mb-4 px-2">Your Published Stories</h4>
 
           {% for blog in blogs %}
-          <div class="card mb-4 shadow-sm blog-card border-0">
+          <div class="card shadow-sm blog-card">
             <div class="card-body p-4 p-md-5">
+              
               <div class="d-flex justify-content-between align-items-center mb-4">
                 <span class="author-badge">Author: {{ user.username }}</span>
                 <small class="text-muted fw-medium">{{ blog.created_at|date:"M d, Y" }}</small>
@@ -165,31 +256,65 @@
               <h3 class="fw-bold h3 mb-3">{{ blog.title }}</h3>
 
               <div class="content-wrapper">
-                <p class="blog-content-short mb-0" id="short-{{ forloop.counter }}">
+                <div class="blog-content-short mb-0" id="short-{{ forloop.counter }}">
                   {{ blog.content }}
-                </p>
+                </div>
 
-                <p class="blog-content-full mb-0" id="full-{{ forloop.counter }}">
+                <div class="blog-content-full mb-0" id="full-{{ forloop.counter }}">
                   {{ blog.content }}
-                </p>
+                </div>
 
-                <a class="read-more-link mt-3 d-inline-block" 
-                   onclick="toggleContent('{{ forloop.counter }}')" 
-                   id="btn-{{ forloop.counter }}">
-                  Read More →
-                </a>
+                <div class="mt-4 d-flex justify-content-between align-items-center border-top pt-3">
+                  <a class="read-more-link" 
+                     onclick="toggleContent('{{ forloop.counter }}')" 
+                     id="btn-{{ forloop.counter }}">
+                    Read More →
+                  </a>
+
+                  <div class="d-flex gap-2">
+                      <a href="{% url 'BlogUpload:edit_blog' blog.id %}" class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm fw-semibold d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-pencil-square me-1" viewBox="0 0 16 16">
+                          <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                          <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                        </svg>
+                        Edit
+                      </a>
+
+                      <form method="POST" action="{% url 'BlogUpload:delete_blog' blog.id %}" onsubmit="return confirm('Are you sure you want to delete this post? This action cannot be undone.');" class="m-0">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3 shadow-sm fw-semibold d-flex align-items-center">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-trash3 me-1" viewBox="0 0 16 16">
+                                  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.813 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.187 3.5h9.626Zm-8.13 2a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5Zm3 0a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5Zm3 0a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5Z"/>
+                              </svg>
+                              Delete
+                          </button>
+                      </form>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
           {% empty %}
           <div class="text-center py-5 border rounded-4 bg-white shadow-sm">
             <h5 class="text-muted">You haven't written any blogs yet.</h5>
-            <p class="small text-secondary">Start sharing your ideas with the world!</p>
             <a href="{% url 'BlogUpload:create_blog' %}" class="btn btn-primary mt-2 px-4 rounded-pill">
               Create Your First Post
             </a>
           </div>
           {% endfor %}
+
+          <div class="danger-zone text-center shadow-sm">
+              <h5 class="text-danger fw-bold h4 mb-3">Danger Zone</h5>
+              <p class="text-muted mb-4">Deleting your account is permanent. All your data and blogs will be lost.</p>
+              
+              <form method="POST" action="{% url 'BlogUpload:delete_account' %}" onsubmit="return confirm('Are you absolutely sure you want to delete your account?');">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-danger px-5 rounded-pill fw-bold py-2">
+                      Delete Account Forever
+                  </button>
+              </form>
+          </div>
+
         </div>
       </div>
     </div>
@@ -213,5 +338,5 @@
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+</body>
 </html>
