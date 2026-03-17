@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ user.username }}'s Profile | BlogApp</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        .navbar {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- PROFILE HEADER --- */
+        .profile-header {
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 4rem 0;
+            margin-bottom: 3rem;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .stats-badge {
+            background-color: #f1f5f9;
+            color: #475569;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* --- BLOG CARDS --- */
+        .blog-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            background: #ffffff;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .blog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05) !important;
+        }
+
+        .author-badge {
+            display: inline-flex;
+            align-items: center;
+            background-color: #eff6ff;
+            color: #2563eb;
+            padding: 5px 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: 1px solid #dbeafe;
+        }
+
+        .blog-content-short {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.7;
+            color: #475569;
+        }
+
+        .blog-content-full {
+            display: none;
+            line-height: 1.7;
+            color: #475569;
+        }
+
+        .read-more-link {
+            font-weight: 600;
+            color: #2563eb;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .read-more-link:hover {
+            color: #1d4ed8;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+      <div class="container">
+        <a class="navbar-brand fw-bold" href="{% url 'BlogUpload:display_blogs' %}">BlogApp</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto align-items-center">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'BlogUpload:display_blogs' %}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'BlogUpload:create_blog' %}">Write Blog</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="{% url 'BlogUpload:profile' %}">Profile</a>
+            </li>
+            <li class="nav-item">
+              <form method="POST" action="{% url 'accounts:logout' %}" class="m-0 ms-lg-3">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm rounded-pill px-4">
+                  Logout
+                </button>
+              </form>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="profile-header text-center shadow-sm">
+      <div class="container">
+        <div class="profile-avatar">{{ user.username|slice:":1"|upper }}</div>
+        <h1 class="fw-bold mb-2">@{{ user.username }}</h1>
+        <div class="d-flex justify-content-center gap-2 mt-3">
+          <span class="stats-badge">{{ blogs.count }} Articles</span>
+          <span class="stats-badge">Joined {{ user.date_joined|date:"Y" }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="container pb-5">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <h4 class="fw-bold mb-4 px-2">Your Published Stories</h4>
+
+          {% for blog in blogs %}
+          <div class="card mb-4 shadow-sm blog-card border-0">
+            <div class="card-body p-4 p-md-5">
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <span class="author-badge">Author: {{ user.username }}</span>
+                <small class="text-muted fw-medium">{{ blog.created_at|date:"M d, Y" }}</small>
+              </div>
+
+              <h3 class="fw-bold h3 mb-3">{{ blog.title }}</h3>
+
+              <div class="content-wrapper">
+                <p class="blog-content-short mb-0" id="short-{{ forloop.counter }}">
+                  {{ blog.content }}
+                </p>
+
+                <p class="blog-content-full mb-0" id="full-{{ forloop.counter }}">
+                  {{ blog.content }}
+                </p>
+
+                <a class="read-more-link mt-3 d-inline-block" 
+                   onclick="toggleContent('{{ forloop.counter }}')" 
+                   id="btn-{{ forloop.counter }}">
+                  Read More →
+                </a>
+              </div>
+            </div>
+          </div>
+          {% empty %}
+          <div class="text-center py-5 border rounded-4 bg-white shadow-sm">
+            <h5 class="text-muted">You haven't written any blogs yet.</h5>
+            <p class="small text-secondary">Start sharing your ideas with the world!</p>
+            <a href="{% url 'BlogUpload:create_blog' %}" class="btn btn-primary mt-2 px-4 rounded-pill">
+              Create Your First Post
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function toggleContent(id) {
+        const shortText = document.getElementById("short-" + id);
+        const fullText = document.getElementById("full-" + id);
+        const btn = document.getElementById("btn-" + id);
+
+        if (fullText.style.display === "none" || fullText.style.display === "") {
+          fullText.style.display = "block";
+          shortText.style.display = "none";
+          btn.innerHTML = "Show Less ↑";
+        } else {
+          fullText.style.display = "none";
+          shortText.style.display = "-webkit-box";
+          btn.innerHTML = "Read More →";
+        }
+      }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

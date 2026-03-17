@@ -19,10 +19,19 @@ def create_blog(request):
         
     return render(request, "BlogUpload/write.html")
 
-
+@login_required
 def display_blogs(request):
     blogs = BlogPost.objects.filter(is_published=True).order_by("-created_at")
     context = {"blogs": blogs}
     return render(request, "BlogUpload/display.html", context)
-def home(request):
-    return HttpResponse("Hello, World! This is the home page of the BlogUpload app.")
+
+
+def profile(request):
+    user=request.user
+    print(user)
+    blogs=BlogPost.objects.filter(author=user)
+    context={"blogs":blogs,
+             "user":user}
+    return render(request,"BlogUpload/profile.html",context)
+    
+

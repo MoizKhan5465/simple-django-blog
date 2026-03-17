@@ -44,19 +44,29 @@ def register(request):
 #login logic
 def login_user(request):
     if request.method == "POST":
-        username=request.POST.get("username")
-        password=request.POST.get("password")
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
-        user=user = authenticate(request, username=username, password=password)
+        # Step 1: Check credentials
+        user = authenticate(request, username=username, password=password)
+
         if user is not None:
-            authenticate(user)
-            return redirect("BlogUpload:create_blog")
-           
-        else:
-            return render(request, "accounts/login.html",{"error":"Invalid username or password"})
-    
-    return render(request, "accounts/login.html")
+            # ✅ Step 2: Log the user into session
+            login(request, user)
 
+            # Optional: handle next redirect
+            next_url = request.POST.get("next")
+            if next_url:
+                return redirect(next_url)
+
+            return redirect("BlogUpload:display_blogs")
+
+        else:
+            return render(request, "accounts/login.html", {
+                "error": "Invalid username or password"
+            })
+
+    return render(request, "accounts/login.html")
 
 #logout logic
 def logoutt(request):
